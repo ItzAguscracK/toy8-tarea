@@ -27,11 +27,11 @@ Tienen un emulador de la computadora y el circuito para el Logisim en el [blog](
 0x7:  11001110    #  CE  #  sw E
 0x8:  10100000    #  A0  #  lw 0
 0x9:  11100001    #  E1  #  bze 1
-0xA:  00000000    #  00  # halt 
-0xB:  00000011    #  01  # dato
-0xC:  00000110    #  06  # dato
-0xD:  11111111    #
-0xE:  00000000    #
+0xA:  00000000    #  00  #  halt
+0xB:  00000011    #  03  #   
+0xC:  00000110    #  06  #   
+0xD:  11111111    #  FF  #  
+0xE:  00000000    #  00  #
 ```
 
 2. Consideren el siguiente _hexdump_ de la memoria de TOY-8. O sea un volcado de la memoria en hexadecimal. ¿Cuántos programas distintos pueden encontrar? Indicar cuáles bytes interpretan como instrucciones y cuáles como datos.
@@ -49,22 +49,45 @@ Tienen un emulador de la computadora y el circuito para el Logisim en el [blog](
 |---|---|--------------|---|---|
 |A5 |0  |IR en         |A5 |1  |
 |A5 |1  |R en, addr mux|08 |5  |
-|26 |0  |              |   |   |
+|26 |0  |IR en         |26 |2  |
+|26 |1  |R en, addr mux|05 |6  |
+|c7 |0  |IR en         |c7 |3  |
+|c7 |1  |R en, addr mux|0D |7  |
+|00 |0  |Ir en         |0  |4  |
+|00 |1  |R en, addr mux|0  |0  |  
 
 4. El siguiente programa suma los números que encuentra en la entrada hasta que aparece un cero, y luego envía el resultado a la salida. Traducirlo a ensamblador y a C siguiendo el ejemplo de las primeras dos líneas.
 
 ```
-0x1:  A0   #  lw 0  #
-0x2:  CE   #  sw E  #  int sum = 0;
-0x3:  AF
-0x4:  E9
-0x5:  2E
-0x6:  CE
-0x7:  A0
-0x8:  E3
-0x9:  AE
-0xA:  CF
-0xB:  00
+0x1:  A0   #  lw  0  #  int r = dir_0 ;
+0x2:  CE   #  sw  E  #  int dir_e = r ;
+0x3:  AF   #  lw  F  #  r = dir_f ;
+0x4:  E9   #  bze 9  #  if (r == 0) r = dir_e ; 
+0x5:  2E   #  add E  #  r = r + dir_e ; 
+0x6:  CE   #  sw  E  #  dir_e = r ; 
+0x7:  A0   #  lw  0  #  r = dir_0 ;
+0x8:  E3   #  bze 3  #  if (r == 0) r = dir_f ;
+0x9:  AE   #  lw  E  #  r = dir_e ;
+0xA:  CF   #  sw  F  #  dir_f = r ;  
+0xB:  00   #  halt   #  exit(-1) ;
 ```
 
 5. Una mejora que le podríamos hacer a esta computadora es duplicar la cantidad de memoria, pasar de 16 bytes a 32 bytes. ¿Cómo lo harían manteniendo la longitud de las instrucciones en 8 bits? ¿Qué partes de la CPU habría que modificar y cómo?
+
+
+```
+Para duplicar la cantidad de memoria de la computadora, lo que hice fue agregar otra memoria de 16 bytes. De este modo, tenemos una para guardar las instrucciones a ejecutar por la CPU y, por otro lado, una para almacenar los datos o números que se tomaran para realizar las operaciones. 
+
+Para ello, es necesario agregar al circuito :
+  -un demultiplexor entre el multiplexor del bus de direcciones y las dos memorias.
+  -un multiplexor que tenga como entrada a las dos memorias y como salida al bus de datos
+  -un demultiplexor cuya entrada sea el RAM str de la Unidad de Control y las salidas sean ambas memorias.
+  
+Con esto logramos:
+  -elegir que memoria será utilizada en un momento dado del ciclo de instrución.
+  -elegir de que memoria se leeran los datos o instrucciones.
+  -elegir que memoria será capaz de leer y almacenar datos en si misma.
+  
+Teniendo en cuenta lo mencionado anteriormente, es necesario sincronizar el circuito para que se lea una instrucción en una memoria y para que se tomen o escriban datos en la otra. Esto lo resolvemos conectando los controles de los demultiplexores y multiplexores a la salida de la Unidad de Control Addr mux.
+
+```

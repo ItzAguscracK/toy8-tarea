@@ -76,18 +76,18 @@ Tienen un emulador de la computadora y el circuito para el Logisim en el [blog](
 
 
 ```
-Para duplicar la cantidad de memoria de la computadora, lo que hice fue agregar otra memoria de 16 bytes. De este modo, tenemos una para guardar las instrucciones a ejecutar por la CPU y, por otro lado, una para almacenar los datos o números que se tomaran para realizar las operaciones. 
+Para duplicar la cantidad de memoria en la computadora, lo que hya que hacer es agregar otros 16 bytes de memoria. De esta forma, podemos guardar las instrucciones para ser ejecutadas por la CPU, por otro lado, podemos guardar los datos o números requeridos para realizar la operación.
 
 Para ello, es necesario agregar al circuito :
   -un demultiplexor entre el multiplexor del bus de direcciones y las dos memorias.
   -un multiplexor que tenga como entrada a las dos memorias y como salida al bus de datos
   -un demultiplexor cuya entrada sea el RAM str de la Unidad de Control y las salidas sean ambas memorias.
-  
-Con esto logramos:
-  -elegir que memoria será utilizada en un momento dado del ciclo de instrución.
-  -elegir de que memoria se leeran los datos o instrucciones.
-  -elegir que memoria será capaz de leer y almacenar datos en si misma.
-  
-Teniendo en cuenta lo mencionado anteriormente, es necesario sincronizar el circuito para que se lea una instrucción en una memoria y para que se tomen o escriban datos en la otra. Esto lo resolvemos conectando los controles de los demultiplexores y multiplexores a la salida de la Unidad de Control Addr mux.
+
+Con esto se logra:
+-Elija qué memoria usar en un momento dado del ciclo de instrucción.
+-Elija de qué memoria leer datos o instrucciones.
+-Elija qué memoria podrá leer y almacenar sus propios datos.
+
+En vista de lo anterior, es necesario sincronizar los circuitos para que las instrucciones se lean en una memoria mientras que los datos se leen o escriben en otra memoria. Resolvimos este problema conectando los controles del demultiplexor y multiplexor a la salida de la unidad de control Addr mux.
 
 ```
